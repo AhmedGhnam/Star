@@ -4,9 +4,30 @@ body {
     /* font-family: 'Neo Sans Arabic', sans-serif;
     font-family: 'Neo Sans', sans-serif; */
     font-family: 'Noto Kufi Arabic', sans-serif;
-    background-size: contain;
-    /* height: 1000px; */
+    /* background: url("../../images/background1.png") no-repeat; */
+    height: 1000px;
+    position: relative;
+    padding-top: 200px;
 }
+
+.layout {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+}
+
+
+
+@media (min-width: 10px) and (max-width: 768px) {
+    
+    .header {
+        background-size: contain !important; 
+    }
+
+}
+
 
 
 .category-holder {
@@ -38,13 +59,10 @@ body {
 
 .navbar-star {
     padding-top: 0;
-    padding-bottom: 20px;
+    padding-bottom: 0px;
     z-index: 1;
 }
 
-.navbar-star.employees {
-    padding-bottom: 0;
-}
 
 .navbar-star .navbar-brand {
     color: #FFF;
@@ -90,9 +108,6 @@ body {
 
 @media (min-width: 10px) and (max-width: 991px) {
     
-    body{
-        background-position: top center;
-    }
 
     .navbar-star .navbar-nav .nav-item .nav-link:hover {
         padding-right: 7px;
@@ -125,7 +140,7 @@ body {
 }
 
 @media (min-width: 10px) and (max-width: 400px) {
-    
+   
     .form-container h1 {
         font-size: 1.5rem;
     }
@@ -259,7 +274,50 @@ form.login .selectboxit-list > .selectboxit-focus > .selectboxit-option-anchor {
 .selectboxit-btn.selectboxit-enabled:focus,
 .selectboxit-btn.selectboxit-enabled:active {
   color: #333333;
-  background-color: none;
+}
+
+.selectboxit-btn.selectboxit-enabled:hover {
+    background-position: 0;
 }
 
 /* End Selectbox design */
+
+
+.ahmed {
+  
+
+}
+
+.ahmed .box-container {
+    justify-content: center;
+}
+
+.ahmed .box {
+    /* padding: 20px; */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    
+}
+
+.ahmed .box .img-con {
+    position: relative;
+}
+
+
+.ahmed .box .img-con .frame-img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    right: 0;
+    top: 0
+}
+
+
+
+.ahmed .box-container .box:hover {
+    
+}
+
+.ahmed .box .img-con img {
+    max-width: 150px;
+}

@@ -11,7 +11,9 @@
     <link rel="stylesheet" href="<?php echo $css ?>style.css" />
     <title>Document</title>
 </head>
-<body dir="rtl">
+<body dir="rtl" class="parallax-bg header" data-bgurl="images/2.png" >
+    <div class="layout"></div>
+
 <?php 
 
     if(!isset($noNavbar)) {

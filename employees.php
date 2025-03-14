@@ -14,23 +14,54 @@ $noNavbar = "";
     } else {
 
     
-    if($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['signupForm'])) {
+    
+        $username = $_POST['signupName'];
+        $password = sha1($_POST['signupPass']);
+        $newpassword = sha1($_POST['newSignupPass']);
 
+        $stmt = $starCon->prepare('SELECT
+                                            UserName, PassWord
+                                        FROM
+                                            users
+                                        WHERE
+                                            UserName = ?
+                                        AND
+                                            PassWord = ?
+                                        LIMIT 1');
+        $stmt->execute(array($username, $password));
+        $count = $stmt->rowCount();
+
+        if($count > 0) {
+            $stmt = $starCon->prepare('UPDATE
+                                        users
+                                    SET
+                                        PassWord = ?,
+                                        SignStatus = 1
+                                    WHERE
+                                        UserName = ?
+                                        ');
+            $stmt->execute(array($newpassword, $username));
+        }
+                                    
+
+    } elseif($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['loginForm'])) {
+        
         $username = $_POST['loginName'];
-        $password = $_POST['loginPass'];
+        $password = sha1($_POST['loginPass']);
         
         $stmt = $starCon->prepare('SELECT
-                                                UserName, ID, PassWord, GroupId
-                                            FROM
-                                                users 
-                                            WHERE
-                                                UserName = ? 
-                                            AND PassWord = ?
-                                            LIMIT 1');
+                                            UserName, ID, PassWord, GroupId
+                                        FROM
+                                            users 
+                                        WHERE
+                                            UserName = ? 
+                                        AND 
+                                            PassWord = ?
+                                        LIMIT 1');
         $stmt->execute(array($username, $password));
         $count = $stmt->rowCount();
         $row   = $stmt->fetch();
-        echo $row['GroupId'];
 
 
         if($count > 0) {
@@ -39,10 +70,7 @@ $noNavbar = "";
             $_SESSION['GroupId']  = $row['GroupId'];
             header('Location: index.php');
             exit();
-        }          
-
-
-
+        }
     }
 
     $stmt2 = $starCon->prepare('SELECT * FROM users');
@@ -77,7 +105,7 @@ $noNavbar = "";
                     <div class="form-group">
                         <input type="password" class="form-control form-control-lg" name="loginPass" placeholder="كلمة السر" autocomplete="new-password">
                     </div>
-                    <input type="submit" class="btn btn-primary btn-lg" value="تسجيل الدخول">
+                    <input type="submit" class="btn btn-primary btn-lg" name="loginForm" value="تسجيل الدخول">
                 </form>
                 <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF'])?>" class="signUp" method="POST">
                     <div class="form-group">
@@ -99,9 +127,9 @@ $noNavbar = "";
                         <input type="password" class="form-control form-control-lg" name="signupPass" placeholder="كلمة السر" autocomplete="new-password">
                     </div>
                     <div class="form-group">
-                        <input type="password" class="form-control form-control-lg" name="signupPass" placeholder="كلمة السر الجديدة" autocomplete="new-password">
+                        <input type="password" class="form-control form-control-lg" name="newSignupPass" placeholder="كلمة السر الجديدة" autocomplete="new-password">
                     </div>
-                    <input type="submit" class="btn btn-success btn-lg btn-block" value="انشاء حساب">
+                    <input type="submit" class="btn btn-success btn-lg btn-block" name="signupForm" value="انشاء حساب">
                 </form>
             </div>
         </div>

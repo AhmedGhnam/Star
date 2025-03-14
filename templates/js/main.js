@@ -1,5 +1,7 @@
 $(document).ready(function() {
 
+    
+
     // make the placeholder disapear when typing in the input
     
     $('[placeholder]').focus(function() {
@@ -31,6 +33,5 @@ $(document).ready(function() {
         autoWidth: false
     });
 
-    
 
 });
