@@ -5,30 +5,6 @@
     include('init.php');
     include($lay . 'header.php');
 
-    class User {
-        public $username;
-        public $password;
-        private $email;
-
-        public function __construct($username, $password, $email) {
-            $this->username = $username;
-            $this->password = $password;
-            $this->email = $email;
-        }
-
-        public function getPrint () {
-            echo $this->username;
-            echo $this->password;
-            echo $this->email;
-        }
-    }
-
-    $user = new User('ahmed', 123, 'ahmed@ghnam.com');
-
-    echo $user->username . '<br>';
-    echo $user->password . '<br>';
-    echo $user->getprint();
-
     
 
     

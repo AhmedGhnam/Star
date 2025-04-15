@@ -12,7 +12,7 @@
     <title>Document</title>
 </head>
 <body dir="rtl" class="parallax-bg header" data-bgurl="images/2.png" >
-    <div class="layout"></div>
+    <!-- <div class="layout"></div> -->
 
 <?php 
 

@@ -1,9 +1,13 @@
 <?php
     ob_start();
     session_start();
-
     include('init.php');
     include ( $lay . 'header.php');
+
+    // set_exception_handler(function($e) {
+    //     echo 'ahmed ghnam exception handler';
+    // });
+   
 
 $noNavbar = "";
 // $noFooter = "";
@@ -12,37 +16,49 @@ $noNavbar = "";
         echo 'U Are Admin';
 
     } else {
-
-    
+        
     if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['signupForm'])) {
     
-        $username = $_POST['signupName'];
-        $password = sha1($_POST['signupPass']);
-        $newpassword = sha1($_POST['newSignupPass']);
+        $username = htmlspecialchars($_POST['signupName']);
+        $password = $_POST['signupPass'];
+        $newpassword = $_POST['newSignupPass'];
+        
 
-        $stmt = $starCon->prepare('SELECT
-                                            UserName, PassWord
-                                        FROM
-                                            users
-                                        WHERE
-                                            UserName = ?
-                                        AND
-                                            PassWord = ?
-                                        LIMIT 1');
-        $stmt->execute(array($username, $password));
-        $count = $stmt->rowCount();
+        include "classes/dbConnect.class.php";
+        include "classes/Signup.class.php";
+        include "classes/Signupctrl.class.php";
 
-        if($count > 0) {
-            $stmt = $starCon->prepare('UPDATE
-                                        users
-                                    SET
-                                        PassWord = ?,
-                                        SignStatus = 1
-                                    WHERE
-                                        UserName = ?
-                                        ');
-            $stmt->execute(array($newpassword, $username));
-        }
+        $user = new SignupCtrl($username, $password, $newpassword);
+        $user->signupUser();
+        $errors = $user->validateForm();
+
+        
+        
+        
+
+        // $stmt = $starCon->prepare('SELECT
+        //                                     UserName, PassWord
+        //                                 FROM
+        //                                     users
+        //                                 WHERE
+        //                                     UserName = ?
+        //                                 AND
+        //                                     PassWord = ?
+        //                                 LIMIT 1');
+        // $stmt->execute(array($username, $password));
+        // $count = $stmt->rowCount();
+
+        // if($count > 0) {
+        //     $stmt = $starCon->prepare('UPDATE
+        //                                 users
+        //                             SET
+        //                                 PassWord = ?,
+        //                                 SignStatus = 1
+        //                             WHERE
+        //                                 UserName = ?
+        //                                 ');
+        //     $stmt->execute(array($newpassword, $username));
+        // }
                                     
 
     } elseif($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['loginForm'])) {
@@ -78,6 +94,7 @@ $noNavbar = "";
     $users = $stmt2->fetchAll();
 
 ?>
+
 <div class="employees-form">
     <div class="overlay">
         <div class="container">
@@ -86,51 +103,82 @@ $noNavbar = "";
                     <span class="s" data-class="signUp">مستخدم جديد</span> | 
                     <span class="l selected" data-class="login">تسجيل الدخول</span>
                 </h1>
+
+                <!-- Start LogIn Form -->
+
                 <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF'])?>" class="login" method="POST">
+                    <!-- Print Error if The User Is Already Exist -->
+                    <?php if(isset($_POST['signupForm']) && isset($errors['userexist'])) { ?>
+                            <div class="alert alert-danger"><?php echo $errors['userexist']; ?></div>
+                        <?php } ?>
+                        <!-- Print Error if The User Is Already Exist -->
+                    
+                        <!-- Print Success Message If The User Registered Successfully -->
+                         <?php if(is_object($user) && !empty($user->getSuccessMsg())) { ?>
+                            <div class="alert alert-success"><?php  echo $user->getSuccessMsg(); ?></div>
+                         <?php  } ?>
+                        <!-- Print Success Message If The User Registered Successfully -->
                     <div class="form-group">
-                        <select name="loginName">
-                            <?php 
-                            foreach($users as $user) {
-                                if($user['SignStatus'] == 1) {
-                                    echo '<option value=\'';
-                                        if($user['SignStatus'] == 1) {echo $user['UserName'];}
-                                        echo '\'>'; 
-                                        if($user['SignStatus'] == 1) {echo $user['UserName'];}
-                                    echo '</option>';
-                                }
-                            }
-                            ?>
-                        </select> 
-                    </div>
+                        <input type="text" class="form-control form-control-lg" name="loginName" value="<?php echo isset($_POST['loginName']) ?  htmlspecialchars($_POST['signupName']) : ''; ?>" placeholder="اسم المستخدم" autocomplete="off">
+                    </div> 
                     <div class="form-group">
-                        <input type="password" class="form-control form-control-lg" name="loginPass" placeholder="كلمة السر" autocomplete="new-password">
+                        <input type="password" class="form-control form-control-lg" name="loginName" placeholder="كلمة السر" autocomplete="new-password">
                     </div>
                     <input type="submit" class="btn btn-primary btn-lg" name="loginForm" value="تسجيل الدخول">
                 </form>
+
+                <!-- End LogIn Form -->
+        
+                <!-- Start Signup Form -->
+
                 <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF'])?>" class="signUp" method="POST">
+                    <?php if(isset($_POST['signupForm']) && isset($errors['userexist'])) { ?>
+                        <div class="alert alert-danger"><?php echo $errors['userexist']; ?></div>
+                    <?php } ?>
                     <div class="form-group">
-                        <select name="signupName">
-                            <?php 
-                                foreach($users as $user) {
-                                    if($user['SignStatus'] == 0) {
-                                        echo '<option value=\'';
-                                            if($user['SignStatus'] == 0) {echo $user['UserName'];}
-                                            echo '\'>'; 
-                                            if($user['SignStatus'] == 0) {echo $user['UserName'];}
-                                        echo '</option>';
-                                    }
-                                }
-                            ?>
-                        </select>
+                        <input type="text" class="form-control form-control-lg" name="signupName" value="<?php echo isset($_POST['signupName']) ?  htmlspecialchars($_POST['signupName']) : ''; ?>" placeholder="اسم المستخدم" autocomplete="off">
                     </div>
+                    <?php if(isset($_POST['signupForm'])) {
+                            if(!empty($errors['username'])) { ?>
+                            <div class="alert alert-danger">
+                                <?php
+                                    foreach($errors['username'] as $error) {
+                                        echo $error . '<br>';
+                                    }
+                                ?>    
+                            </div>
+                    <?php }} ?>
                     <div class="form-group">
                         <input type="password" class="form-control form-control-lg" name="signupPass" placeholder="كلمة السر" autocomplete="new-password">
                     </div>
+                    <?php if(isset($_POST['signupForm'])) {
+                            if(!empty($errors['oldpassword'])) { ?>
+                            <div class="alert alert-danger">
+                                <?php
+                                    foreach($errors['oldpassword'] as $error) {
+                                        echo $error . '<br>';
+                                    }
+                                ?>    
+                            </div>
+                    <?php }} ?>
                     <div class="form-group">
-                        <input type="password" class="form-control form-control-lg" name="newSignupPass" placeholder="كلمة السر الجديدة" autocomplete="new-password">
+                        <input type="password" class="form-control form-control-lg" name="newSignupPass"  title="يجب ان يكون اكثر من 4 حروف وارقام " placeholder="كلمة السر الجديدة" autocomplete="new-password">
                     </div>
+                    <!-- pattern="[A-Za-z0-9_]{4,}" -->
+                    <?php if(isset($_POST['signupForm'])) {
+                            if(!empty($errors['newpassword'])) { ?>
+                            <div class="alert alert-danger">
+                                <?php
+                                    foreach($errors['newpassword'] as $error) {
+                                        echo $error . '<br>';
+                                    }
+                                ?>    
+                            </div>
+                    <?php }} ?>
                     <input type="submit" class="btn btn-success btn-lg btn-block" name="signupForm" value="انشاء حساب">
                 </form>
+                <!-- End Signup Form -->
+
             </div>
         </div>
     </div>
