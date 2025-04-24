@@ -9,6 +9,8 @@ class SignupCtrl extends Signup {
     protected $errors = [];
     protected $successMsg;
 
+    private \DateTime $date;
+
     public function __construct($username, $password, $newpassword) {
         $this->username    = $username;
         $this->password    = $password;
